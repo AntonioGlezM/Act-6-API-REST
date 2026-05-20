@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -30,6 +31,18 @@ public class GlobalExceptionHandler {
         response.put("campos", errores);
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    // Maneja rutas inexistentes (ej: /api/v1 sin recurso) devolviendo 404 en vez de 500
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(NoResourceFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now().toString());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Recurso no encontrado");
+        response.put("mensaje", "La ruta solicitada no existe: " + ex.getResourcePath());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     // Maneja cualquier otra excepción no controlada
