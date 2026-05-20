@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameAPI - Catálogo de Videojuegos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: #e94560;
+            margin-bottom: 0.5rem;
+        }
+
+        header p { color: #8a8a9a; }
+
+        main { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+
+        .section {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            color: #e94560;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: #16213e;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            padding: 1.2rem;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover { border-color: #e94560; }
+
+        .card h3 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #8a8a9a;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e94560;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin: 2px;
+        }
+
+        .price {
+            color: #4ecca3;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.6rem 1.2rem;
+            background: #16213e;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            color: #8a8a9a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover, .tab.active {
+            background: #e94560;
+            color: #fff;
+            border-color: #e94560;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #8a8a9a;
+        }
+
+        .error {
+            background: #3d1a1a;
+            border: 1px solid #e94560;
+            color: #e94560;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            background: #16213e;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .search-bar button {
+            padding: 0.6rem 1.2rem;
+            background: #e94560;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎮 GameAPI</h1>
+        <p>Catálogo de videojuegos — API REST con Spring Boot</p>
+    </header>
+
+    <main>
+        <!-- Pestañas de navegación -->
+        <div class="tabs">
+            <div class="tab active" onclick="showSection('juegos')">Juegos</div>
+            <div class="tab" onclick="showSection('estudios')">Estudios</div>
+            <div class="tab" onclick="showSection('generos')">Géneros</div>
+        </div>
+
+        <!-- Sección de juegos -->
+        <div id="juegos-section" class="section">
+            <h2>Videojuegos</h2>
+            <div class="search-bar">
+                <input type="text" id="search-juegos" placeholder="Buscar por título...">
+                <button onclick="searchJuegos()">Buscar</button>
+            </div>
+            <div id="juegos-list" class="cards">
+                <div class="loading">Cargando juegos...</div>
+            </div>
+        </div>
+
+        <!-- Sección de estudios -->
+        <div id="estudios-section" class="section" style="display:none">
+            <h2>Estudios de desarrollo</h2>
+            <div id="estudios-list" class="cards">
+                <div class="loading">Cargando estudios...</div>
+            </div>
+        </div>
+
+        <!-- Sección de géneros -->
+        <div id="generos-section" class="section" style="display:none">
+            <h2>Géneros</h2>
+            <div id="generos-list" class="cards">
+                <div class="loading">Cargando géneros...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = '/api/v1';
+
+        // Cambia la sección visible y marca la pestaña activa
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(section + '-section').style.display = 'block';
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Carga los juegos desde la API
+        async function loadJuegos() {
+            try {
+                const res = await fetch(API + '/juegos');
+                const juegos = await res.json();
+                renderJuegos(juegos);
+            } catch (err) {
+                document.getElementById('juegos-list').innerHTML =
+                    '<div class="error">Error al cargar juegos. ¿Está la API corriendo?</div>';
+            }
+        }
+
+        // Renderiza las tarjetas de juegos
+        function renderJuegos(juegos) {
+            const container = document.getElementById('juegos-list');
+            if (juegos.length === 0) {
+                container.innerHTML = '<p style="color:#8a8a9a">No se encontraron juegos.</p>';
+                return;
+            }
+            container.innerHTML = juegos.map(j => `
+                <div class="card">
+                    <h3>${j.titulo}</h3>
+                    <p>${j.descripcion || 'Sin descripción'}</p>
+                    <p class="price">${j.precio ? j.precio.toFixed(2) + ' €' : 'Precio no disponible'}</p>
+                    <p>Estudio: ${j.estudio ? j.estudio.nombre : 'No asignado'}</p>
+                    <p>Lanzamiento: ${j.fechaLanzamiento || 'No disponible'}</p>
+                    <div>${(j.generos || []).map(g => `<span class="badge">${g.nombre}</span>`).join('')}</div>
+                </div>
+            `).join('');
+        }
+
+        // Busca juegos por título
+        async function searchJuegos() {
+            const query = document.getElementById('search-juegos').value.trim();
+            const url = query ? API + '/juegos/buscar?titulo=' + encodeURIComponent(query) : API + '/juegos';
+            try {
+                const res = await fetch(url);
+                const juegos = await res.json();
+                renderJuegos(juegos);
+            } catch (err) {
+                document.getElementById('juegos-list').innerHTML =
+                    '<div class="error">Error en la búsqueda.</div>';
+            }
+        }
+
+        // Carga los estudios desde la API
+        async function loadEstudios() {
+            try {
+                const res = await fetch(API + '/estudios');
+                const estudios = await res.json();
+                const container = document.getElementById('estudios-list');
+                if (estudios.length === 0) {
+                    container.innerHTML = '<p style="color:#8a8a9a">No hay estudios registrados.</p>';
+                    return;
+                }
+                container.innerHTML = estudios.map(e => `
+                    <div class="card">
+                        <h3>${e.nombre}</h3>
+                        <p>País: ${e.pais}</p>
+                        <p>Fundado en: ${e.anioFundacion}</p>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('estudios-list').innerHTML =
+                    '<div class="error">Error al cargar estudios.</div>';
+            }
+        }
+
+        // Carga los géneros desde la API
+        async function loadGeneros() {
+            try {
+                const res = await fetch(API + '/generos');
+                const generos = await res.json();
+                const container = document.getElementById('generos-list');
+                if (generos.length === 0) {
+                    container.innerHTML = '<p style="color:#8a8a9a">No hay géneros registrados.</p>';
+                    return;
+                }
+                container.innerHTML = generos.map(g => `
+                    <div class="card">
+                        <h3>${g.nombre}</h3>
+                        <p>${g.descripcion || 'Sin descripción'}</p>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('generos-list').innerHTML =
+                    '<div class="error">Error al cargar géneros.</div>';
+            }
+        }
+
+        // Permite buscar con Enter
+        document.getElementById('search-juegos').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchJuegos();
+        });
+
+        // Carga inicial de datos
+        loadJuegos();
+        loadEstudios();
+        loadGeneros();
+    </script>
+</body>
+</html>
