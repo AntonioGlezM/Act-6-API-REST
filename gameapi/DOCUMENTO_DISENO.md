@@ -20,9 +20,9 @@ Spring Boot simplifica la creación de aplicaciones Spring con configuración au
 
 Proporciona una abstracción sobre JPA/Hibernate que reduce drásticamente el código de acceso a datos. Con `JpaRepository` obtenemos CRUD completo sin escribir consultas SQL. Soporta métodos derivados (`findByNombreContainingIgnoreCase`) y consultas JPQL personalizadas con `@Query`.
 
-### H2 Database — Base de datos en memoria
+### MySQL — Base de datos relacional
 
-H2 se eligió por su simplicidad: no requiere instalación externa, se configura en una línea y tiene consola web integrada para inspeccionar las tablas durante la defensa oral. Es ideal para desarrollo y demos. Se descartó MySQL porque añade complejidad de instalación sin aportar valor al aprendizaje en esta actividad.
+MySQL es uno de los sistemas de gestión de bases de datos relacionales más utilizados en la industria y se gestiona cómodamente con MySQL Workbench, herramienta que permite inspeccionar las tablas, ejecutar consultas y ver las relaciones durante la defensa oral. Se eligió por ser un motor real de producción (a diferencia de una base en memoria), lo que hace que el proyecto sea más representativo de un entorno profesional. La base de datos `gamedb` se crea automáticamente al arrancar gracias al parámetro `createDatabaseIfNotExist=true` en la URL de conexión.
 
 ### Lombok — Reducción de código boilerplate
 
@@ -39,6 +39,10 @@ Spring Security se integra nativamente con Spring Boot y permite configurar regl
 ### Bean Validation (jakarta.validation) — Validación de datos de entrada
 
 Permite validar los datos recibidos en las peticiones con anotaciones como `@NotBlank`, `@NotNull`, `@Size` y `@Positive` directamente en las entidades. Combinado con `@Valid` en los controladores y `@ControllerAdvice` para el manejo de errores, proporciona respuestas de error claras en JSON.
+
+### SpringDoc OpenAPI (Swagger UI) — Documentación interactiva
+
+Genera automáticamente la documentación de la API a partir de los controladores y la expone en una interfaz web (Swagger UI) donde se pueden probar todos los endpoints. Se configuró un esquema de seguridad JWT para que, mediante el botón **Authorize**, se pueda introducir el token y ejecutar los endpoints protegidos (POST, PUT, DELETE) directamente desde el navegador, sin necesidad de Postman.
 
 ---
 
@@ -153,12 +157,12 @@ Se implementó JWT con un filtro (`JwtFilter`) que extiende `OncePerRequestFilte
 
 Validación de entrada con `@Valid` y anotaciones como `@NotBlank`, `@NotNull`, `@Size` y `@Positive` en las entidades, y manejo global de excepciones con `@ControllerAdvice` que devuelve respuestas de error consistentes en JSON con timestamp, status, mensaje y campos con errores.
 
-### 4.8 H2 con datos iniciales en data.sql
+### 4.8 MySQL con datos iniciales en data.sql
 
-Se usa `spring.jpa.defer-datasource-initialization=true` para que Hibernate cree las tablas antes de que se ejecute `data.sql`. Esto permite tener datos de ejemplo listos al arrancar sin necesidad de insertarlos manualmente en cada demostración.
+Se usa `spring.jpa.defer-datasource-initialization=true` para que Hibernate cree las tablas antes de que se ejecute `data.sql`. El script `data.sql` es idempotente (cada `INSERT` comprueba con `WHERE NOT EXISTS` que la fila no exista ya), de modo que al usar `ddl-auto=update` los datos persisten entre arranques sin generar errores de claves duplicadas.
 
 ---
 
 ## 5. Capturas de la base de datos
 
-> Las capturas de las tablas generadas se mostrarán en directo durante la defensa oral accediendo a la consola H2 en `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:gamedb`, usuario: `sa`, contraseña vacía).
+> Las capturas de las tablas generadas se mostrarán en directo durante la defensa oral abriendo el esquema `gamedb` en MySQL Workbench (conexión a `localhost:3306`, usuario: `root`, contraseña: `admin123`).

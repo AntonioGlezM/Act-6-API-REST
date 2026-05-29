@@ -25,12 +25,10 @@ public class SecurityConfig {
         http
                 // Desactiva CSRF porque es una API REST sin estado
                 .csrf(csrf -> csrf.disable())
-                // Permite la consola H2 en un iframe
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 // Configuración de autorizaciones
                 .authorizeHttpRequests(auth -> auth
-                        // Consola H2 pública (solo para desarrollo)
-                        .requestMatchers("/h2-console/**").permitAll()
+                        // Swagger UI y documentación OpenAPI públicos
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // Endpoint de autenticación público
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // Archivos estáticos públicos (página HTML)
