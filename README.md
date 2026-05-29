@@ -118,7 +118,7 @@ Acceder a `http://localhost:8080` para ver el catálogo de videojuegos en una p�
 ## 👥 Autores
 
 - Antonio González
-- Yassine [Apellido]
+- Yassine Es Sayar
 
 ---
 
