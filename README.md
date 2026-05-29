@@ -29,7 +29,7 @@ cd gameapi
 
 La aplicación arrancará en `http://localhost:8080`.
 
-> **Requisito previo:** tener MySQL en marcha con un usuario `root` y contraseña `admin123`. La base de datos `gamedb` se crea automáticamente al arrancar (gracias al parámetro `createDatabaseIfNotExist=true`). Puedes inspeccionarla con MySQL Workbench.
+> **Requisito previo:** tener MySQL en marcha con un usuario `root` y contraseña `LaTuya`. La base de datos `gamedb` se crea automáticamente al arrancar (gracias al parámetro `createDatabaseIfNotExist=true`). Puedes inspeccionarla con MySQL Workbench.
 
 ## 📂 Estructura del proyecto
 
