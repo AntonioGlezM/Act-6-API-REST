@@ -14,7 +14,7 @@ Java es el lenguaje enseñado en el módulo de Programación y Acceso a Datos. L
 
 ### Spring Boot 3.3.5 — Framework backend
 
-Spring Boot simplifica la creación de aplicaciones Spring con configuración automática, servidor embebido (Tomcat) y gestión de dependencias mediante starters. Se eligió sobre alternativas como Quarkus o Micronaut por ser el estándar de la industria y el framework enseñado en clase.
+Spring Boot simplifica la creación de aplicaciones Spring con configuración automática, servidor embebido (Tomcat) y gestión de dependencias mediante starters. Se eligió sobre alternativas porque es el framework enseñado en clase.
 
 ### Spring Data JPA — Capa de persistencia
 
