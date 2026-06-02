@@ -2,7 +2,7 @@
 
 > API REST de Videojuegos · Actividad Evaluativa UT6  
 > CFGS Desarrollo de Aplicaciones Web (DAW) — CIFP Villa de Agüimes  
-> Autores: Antonio González · Yassine [Apellido]
+> Autores: Antonio González · Yassine Es Sayar
 
 ---
 
